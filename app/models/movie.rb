@@ -5,7 +5,7 @@ class Movie < ActiveRecord::Base
   # if ratings_list is nil, retrieve ALL movies
   return all if ratings_list.blank?
 
-  uppercase_ratings = ratings_list.keys.map(&:upcase)
+  uppercase_ratings = ratings_list.map(&:upcase)
 
   where(rating: uppercase_ratings)
 
@@ -16,7 +16,7 @@ class Movie < ActiveRecord::Base
   end
 
   def self.ratings_to_show
-    @ratings_to_show = Array.new()
+      @ratings_to_show = ['G', 'PG', 'PG-13', 'R']
   end
 
 

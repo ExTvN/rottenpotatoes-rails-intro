@@ -8,32 +8,29 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.all_ratings
-    @ratings_to_show = params[:ratings] || Movie.ratings_to_show
-    #@movies = Movie.all
-
-    #if params[:ratings].present?
-    # @ratings_to_show = params[:ratings].keys
-    #end
-
-    @sort_column = params[:sort]
-
-    valid_sort_columns = ['title', 'release_date']
-
-    unless valid_sort_columns.include?(@sort_column)
-      @sort_column = nil
+  
+    # Load filter and sort options from session, or use defaults
+    @ratings_to_show = session[:ratings] || @all_ratings
+    @sort_column = session[:sort]
+  
+    # If new filter or sort options are provided in params, update session
+    if params[:ratings]
+      @ratings_to_show = params[:ratings]
+      session[:ratings] = @ratings_to_show
     end
-
+  
+    if params[:sort]
+      @sort_column = params[:sort]
+      session[:sort] = @sort_column
+    end
+  
     @movies = Movie.with_ratings(@ratings_to_show)
-
     if @sort_column.present?
       @movies = @movies.order(@sort_column)
       @header_css_class = 'hilite bg-warning'
     end
-
-
-    @title_sort_path = movies_path(sort: 'title', ratings: @ratings_to_show)
-    @release_date_sort_path = movies_path(sort: 'release_date', ratings: @ratings_to_show)
   end
+  
 
   def new
     # default: render 'new' template
@@ -64,15 +61,6 @@ class MoviesController < ApplicationController
   end
 
   private
-  # Making "internal" methods private is not required, but is a common practice.
-  # This helps make clear which methods respond to requests, and which ones do not.
-  # def header_css_class(column_name)
-  #   if @sort_column == column_name
-  #     return 'hilite bg-warning'
-  #   else
-  #     return ''
-  #   end
-  # end
 
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
