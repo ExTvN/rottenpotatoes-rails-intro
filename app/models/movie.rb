@@ -4,7 +4,11 @@ class Movie < ActiveRecord::Base
   #  movies with those ratings
   # if ratings_list is nil, retrieve ALL movies
   return all if ratings_list.blank?
-  where(rating: ratings_list.map(&:upcase))
+
+  uppercase_ratings = ratings_list.keys.map(&:upcase)
+
+  where(rating: uppercase_ratings)
+
   end
 
   def self.all_ratings
